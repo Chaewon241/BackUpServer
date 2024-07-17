@@ -1,0 +1,11 @@
+syntax = "proto3";
+package Protocol;
+
+import "Enum.proto";
+
+message UserInfo
+{
+	int32 id = 1;
+	string playerId = 2;
+	string nickname = 3;
+}
