@@ -83,7 +83,7 @@ struct C_ADD_FRIENDDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT C_ADD_FRIENDDefaultTypeInternal _C_ADD_FRIEND_default_instance_;
 constexpr S_ADD_FRIEND::S_ADD_FRIEND(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : success_(false){}
+  : success_(uint64_t{0u}){}
 struct S_ADD_FRIENDDefaultTypeInternal {
   constexpr S_ADD_FRIENDDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -417,7 +417,7 @@ const char descriptor_table_protodef_Protocol_2eproto[] PROTOBUF_SECTION_VARIABL
   "\n\007S_LOGIN\022\017\n\007success\030\001 \001(\010\022%\n\004user\030\002 \001(\013"
   "2\022.Protocol.UserInfoH\000\210\001\001B\007\n\005_user\"\032\n\014C_"
   "ADD_FRIEND\022\n\n\002id\030\001 \001(\t\"\037\n\014S_ADD_FRIEND\022\017"
-  "\n\007success\030\001 \001(\010\"\032\n\014C_GET_FRIEND\022\n\n\002id\030\001 "
+  "\n\007success\030\001 \001(\004\"\032\n\014C_GET_FRIEND\022\n\n\002id\030\001 "
   "\001(\t\"3\n\014S_GET_FRIEND\022#\n\007friends\030\001 \003(\0132\022.P"
   "rotocol.UserInfo\"\033\n\rC_CREATE_ROOM\022\n\n\002ip\030"
   "\001 \001(\t\"1\n\rS_CREATE_ROOM\022\017\n\007success\030\001 \001(\010\022"
@@ -1650,7 +1650,7 @@ S_ADD_FRIEND::S_ADD_FRIEND(const S_ADD_FRIEND& from)
 }
 
 void S_ADD_FRIEND::SharedCtor() {
-success_ = false;
+success_ = uint64_t{0u};
 }
 
 S_ADD_FRIEND::~S_ADD_FRIEND() {
@@ -1679,7 +1679,7 @@ void S_ADD_FRIEND::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  success_ = false;
+  success_ = uint64_t{0u};
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1689,7 +1689,7 @@ const char* S_ADD_FRIEND::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // bool success = 1;
+      // uint64 success = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
           success_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
@@ -1725,10 +1725,10 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // bool success = 1;
+  // uint64 success = 1;
   if (this->success() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(1, this->_internal_success(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(1, this->_internal_success(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1747,9 +1747,11 @@ size_t S_ADD_FRIEND::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // bool success = 1;
+  // uint64 success = 1;
   if (this->success() != 0) {
-    total_size += 1 + 1;
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
+        this->_internal_success());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {

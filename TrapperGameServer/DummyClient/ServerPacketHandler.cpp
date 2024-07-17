@@ -60,7 +60,16 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 
 bool Handle_S_ADD_FRIEND(PacketSessionRef& session, Protocol::S_ADD_FRIEND& pkt)
 {
-	return false;
+	auto result = pkt.success();
+
+	if(result == -1)
+		cout << "친구 아이디가 없음" << endl;
+	else if (result == 0)
+		cout << "이미 친구임" << endl;
+	else if (result == 1)
+		cout << "친구추가 성공" << endl;
+
+	return true;
 }
 
 bool Handle_S_GET_FRIEND(PacketSessionRef& session, Protocol::S_GET_FRIEND& pkt)

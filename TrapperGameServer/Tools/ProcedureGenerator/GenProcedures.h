@@ -26,10 +26,14 @@ namespace SP
     private:
     };
 
-    class GetPlayer : public DBBind<0,0>
+    class GetPlayerInfo : public DBBind<1,0>
     {
     public:
-    	GetPlayer(DBConnection& conn) : DBBind(conn, L"{CALL dbo.spGetPlayer}") { }
+    	GetPlayerInfo(DBConnection& conn) : DBBind(conn, L"{CALL dbo.spGetPlayerInfo(?)}") { }
+    	template<int32 N> void In_PlayerId(WCHAR(&v)[N]) { BindParam(0, v); };
+    	template<int32 N> void In_PlayerId(const WCHAR(&v)[N]) { BindParam(0, v); };
+    	void In_PlayerId(WCHAR* v, int32 count) { BindParam(0, v, count); };
+    	void In_PlayerId(const WCHAR* v, int32 count) { BindParam(0, v, count); };
 
     private:
     };
@@ -106,6 +110,18 @@ namespace SP
     	template<int32 N> void In_FriendId(const WCHAR(&v)[N]) { BindParam(1, v); };
     	void In_FriendId(WCHAR* v, int32 count) { BindParam(1, v, count); };
     	void In_FriendId(const WCHAR* v, int32 count) { BindParam(1, v, count); };
+
+    private:
+    };
+
+    class GetFriendsList : public DBBind<1,0>
+    {
+    public:
+    	GetFriendsList(DBConnection& conn) : DBBind(conn, L"{CALL dbo.spGetFriendsList(?)}") { }
+    	template<int32 N> void In_PlayerId(WCHAR(&v)[N]) { BindParam(0, v); };
+    	template<int32 N> void In_PlayerId(const WCHAR(&v)[N]) { BindParam(0, v); };
+    	void In_PlayerId(WCHAR* v, int32 count) { BindParam(0, v, count); };
+    	void In_PlayerId(const WCHAR* v, int32 count) { BindParam(0, v, count); };
 
     private:
     };

@@ -24,7 +24,7 @@ public:
 
 	UserInfo& GetAccountInfo(string id);
 
-	void AddFriend(string id);
+	int32 AddFriend(string id);
 
 	void PushActiveAccount(PacketSessionRef session, string id);
 	void DelActiveAccount(string id);

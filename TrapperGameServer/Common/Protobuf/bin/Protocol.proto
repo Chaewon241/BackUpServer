@@ -35,7 +35,7 @@ message C_ADD_FRIEND
 
 message S_ADD_FRIEND
 {
-	bool success = 1;
+	uint64 success = 1;
 }
 
 message C_GET_FRIEND

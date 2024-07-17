@@ -989,13 +989,13 @@ class S_ADD_FRIEND final :
   enum : int {
     kSuccessFieldNumber = 1,
   };
-  // bool success = 1;
+  // uint64 success = 1;
   void clear_success();
-  bool success() const;
-  void set_success(bool value);
+  ::PROTOBUF_NAMESPACE_ID::uint64 success() const;
+  void set_success(::PROTOBUF_NAMESPACE_ID::uint64 value);
   private:
-  bool _internal_success() const;
-  void _internal_set_success(bool value);
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_success() const;
+  void _internal_set_success(::PROTOBUF_NAMESPACE_ID::uint64 value);
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.S_ADD_FRIEND)
@@ -1005,7 +1005,7 @@ class S_ADD_FRIEND final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  bool success_;
+  ::PROTOBUF_NAMESPACE_ID::uint64 success_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -3093,22 +3093,22 @@ inline void C_ADD_FRIEND::set_allocated_id(std::string* id) {
 
 // S_ADD_FRIEND
 
-// bool success = 1;
+// uint64 success = 1;
 inline void S_ADD_FRIEND::clear_success() {
-  success_ = false;
+  success_ = uint64_t{0u};
 }
-inline bool S_ADD_FRIEND::_internal_success() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 S_ADD_FRIEND::_internal_success() const {
   return success_;
 }
-inline bool S_ADD_FRIEND::success() const {
+inline ::PROTOBUF_NAMESPACE_ID::uint64 S_ADD_FRIEND::success() const {
   // @@protoc_insertion_point(field_get:Protocol.S_ADD_FRIEND.success)
   return _internal_success();
 }
-inline void S_ADD_FRIEND::_internal_set_success(bool value) {
+inline void S_ADD_FRIEND::_internal_set_success(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   
   success_ = value;
 }
-inline void S_ADD_FRIEND::set_success(bool value) {
+inline void S_ADD_FRIEND::set_success(::PROTOBUF_NAMESPACE_ID::uint64 value) {
   _internal_set_success(value);
   // @@protoc_insertion_point(field_set:Protocol.S_ADD_FRIEND.success)
 }

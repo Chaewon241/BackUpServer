@@ -73,7 +73,13 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 
 bool Handle_C_ADD_FRIEND(PacketSessionRef& session, Protocol::C_ADD_FRIEND& pkt)
 {
-	GAccountManager->AddFriend(pkt.id());
+	int32 addFriendResult = GAccountManager->AddFriend(pkt.id());
+
+	Protocol::S_ADD_FRIEND addFriendPkt;
+	addFriendPkt.set_success(addFriendResult);
+
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(addFriendPkt);
+	session->Send(sendBuffer);
 
 	return true;
 }

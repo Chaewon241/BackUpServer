@@ -157,7 +157,7 @@ UserInfo& AccountManager::GetAccountInfo(string id)
 	return m_MyInfo;
 }
 
-void AccountManager::AddFriend(string friendId)
+int32 AccountManager::AddFriend(string friendId)
 {
 	SP::AddFriend addFriend(*m_DbConn);
 	// 친구 추가할 친구 아이디
@@ -173,7 +173,35 @@ void AccountManager::AddFriend(string friendId)
 	MultiByteToWideChar(CP_UTF8, 0, m_MyInfo.id.c_str(), -1, wMyId, idLength);
 	addFriend.In_UserId(wMyId);
 
-	SQLRETURN ret = addFriend.Execute();
+	addFriend.Execute();
+
+	SQLHSTMT stmt = m_DbConn->GetStatement();
+	SQLLEN indicator;
+	SQLSMALLINT result = 0;
+	SQLRETURN ret = addFriend.Fetch();
+
+	if (SQL_SUCCEEDED(ret))
+	{
+		ret = SQLGetData(stmt, 1, SQL_C_SSHORT, &result, 0, &indicator);
+		if (SQL_SUCCEEDED(ret))
+		{
+			// friendid가 없을 때
+			if (result == -1)
+			{
+				return result;
+			}
+			// 이미 친구일 때
+			else if (result == 0)
+			{
+				return result;
+			}
+			// insert 성공
+			else if (result == 1)
+			{
+				return result;
+			}			
+		}
+	}
 }
 
 void AccountManager::PushActiveAccount(PacketSessionRef session, string id)
