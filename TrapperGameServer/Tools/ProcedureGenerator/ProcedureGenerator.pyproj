@@ -11,8 +11,6 @@
     <OutputPath>.</OutputPath>
     <Name>ProcedureGenerator</Name>
     <RootNamespace>ProcedureGenerator</RootNamespace>
-    <InterpreterId>
-    </InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

@@ -96,6 +96,7 @@ int32 DBConnection::GetRowCount()
 
 void DBConnection::Unbind()
 {
+	::SQLCloseCursor(_statement);
 	::SQLFreeStmt(_statement, SQL_UNBIND);
 	::SQLFreeStmt(_statement, SQL_RESET_PARAMS);
 	::SQLFreeStmt(_statement, SQL_CLOSE);

@@ -62,14 +62,18 @@ bool Handle_S_ADD_FRIEND(PacketSessionRef& session, Protocol::S_ADD_FRIEND& pkt)
 {
 	auto result = pkt.success();
 
-	if(result == -1)
-		cout << "친구 아이디가 없음" << endl;
-	else if (result == 0)
-		cout << "이미 친구임" << endl;
-	else if (result == 1)
+	if (result == 1)
 		cout << "친구추가 성공" << endl;
+	else if (result == 2)
+		cout << "유저아이디랑 친구아이디랑 똑같으면 안됨" << endl;
+	else if (result == 3)
+		cout << "친구아이디가 없음" << endl;
+	else if (result == 4)
+		cout << "이미 친구임" << endl;
+	else if (result == 5)
+		cout << "친구추가 실패" << endl;
 
-	return true;
+	return false;
 }
 
 bool Handle_S_GET_FRIEND(PacketSessionRef& session, Protocol::S_GET_FRIEND& pkt)
@@ -77,10 +81,6 @@ bool Handle_S_GET_FRIEND(PacketSessionRef& session, Protocol::S_GET_FRIEND& pkt)
 	return false;
 }
 
-bool Handle_S_GET_FRIEND(PacketSessionRef& session, Protocol::C_DESTROY_ROOM& pkt)
-{
-	return true;
-}
 
 bool Handle_S_CREATE_ROOM(PacketSessionRef& session, Protocol::S_CREATE_ROOM& pkt)
 {

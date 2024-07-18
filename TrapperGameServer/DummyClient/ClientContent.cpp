@@ -46,7 +46,7 @@ void ClientContent::Start()
 	this_thread::sleep_for(1s);
 
 	 service = MakeShared<ClientService>(
-		NetAddress(L"192.168.35.224", 7777),
+		NetAddress(L"172.16.1.72", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<ServerSession>, // TODO : SessionManager 등
 		1);
@@ -65,6 +65,7 @@ void ClientContent::Start()
 	}
 
 	int num;
+
 	while (true)
 	{
 		while (_clientRun)
@@ -129,23 +130,23 @@ void ClientContent::AfterLogin()
 		if (num == 1)
 		{
 			string id;
-			cout << "아이디 : ";
+			cout << "친구추가할 아이디 : ";
 			cin >> id;
 
 			Protocol::C_ADD_FRIEND pkt;
 			pkt.set_id(id);
 			auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
 			service->Broadcast(sendBuffer);
-			this_thread::sleep_for(2s);
-
 		}
 		else if (num == 2)
 		{
-			/*Protocol::C_ADD_FRIEND pkt;
-			pkt.set_id(id);
+			Protocol::C_GET_FRIEND pkt;
+			pkt.set_id(myId);
 			auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
-			service->Broadcast(sendBuffer);*/
+			service->Broadcast(sendBuffer);
 		}
+		
+		this_thread::sleep_for(1s);
 	}
 
 }

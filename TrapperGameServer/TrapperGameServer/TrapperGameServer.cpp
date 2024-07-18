@@ -27,14 +27,14 @@ std::wstring convert_to_wstring(const std::string& str)
 
 int main(int argc, char* argv[])
 {
-	ASSERT_CRASH(GDBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=yes;"));
+	/*ASSERT_CRASH(GDBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=yes;"));
 
 	DBConnection* dbConn = GDBConnectionPool->Pop();
 	DBSynchronizer dbSync(*dbConn);
 	dbSync.Synchronize(L"GameDB.xml");
 
 	SP::DeleteAllGold deleteAllGold(*dbConn);
-	deleteAllGold.Execute();
+	deleteAllGold.Execute();*/
 
 	std::vector<std::wstring> args;
 	for (int i = 0; i < argc; ++i) 

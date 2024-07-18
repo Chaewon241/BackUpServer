@@ -86,6 +86,20 @@ bool Handle_C_ADD_FRIEND(PacketSessionRef& session, Protocol::C_ADD_FRIEND& pkt)
 
 bool Handle_C_GET_FRIEND(PacketSessionRef& session, Protocol::C_GET_FRIEND& pkt)
 {
+	GAccountManager->GetFriends(pkt.id());
+
+	/*vector<wstring> friends = GAccountManager->GetFriends(pkt.id());
+
+	Protocol::S_GET_FRIEND getFriendPkt;
+
+	for (auto f : friends)
+	{
+		Protocol::UserInfo* userInfo = getFriendPkt.mutable_user();
+		userInfo->set_id(info.uid);
+		userInfo->set_playerid(pkt.id());
+		userInfo->set_nickname(info.nickname);
+	}*/
+	
 	return false;
 }
 

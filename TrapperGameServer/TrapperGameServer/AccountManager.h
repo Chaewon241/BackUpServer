@@ -25,6 +25,7 @@ public:
 	UserInfo& GetAccountInfo(string id);
 
 	int32 AddFriend(string id);
+	vector<tuple<int32, string, string>>& GetFriends(string id);
 
 	void PushActiveAccount(PacketSessionRef session, string id);
 	void DelActiveAccount(string id);

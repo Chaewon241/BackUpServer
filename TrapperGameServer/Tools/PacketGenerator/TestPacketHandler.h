@@ -16,18 +16,16 @@ enum : uint16
 	PKT_S_LOGIN = 1003,
 	PKT_C_ADD_FRIEND = 1004,
 	PKT_S_ADD_FRIEND = 1005,
-	PKT_C_GET_FRIEND = 1006,
-	PKT_S_GET_FRIEND = 1007,
-	PKT_C_CREATE_ROOM = 1008,
-	PKT_S_CREATE_ROOM = 1009,
-	PKT_C_JOIN_ROOM = 1010,
-	PKT_S_JOIN_ROOM = 1011,
-	PKT_C_DESTROY_ROOM = 1012,
-	PKT_S_DESTROY_ROOM = 1013,
-	PKT_C_ENTER_GAME = 1014,
-	PKT_S_ENTER_GAME = 1015,
-	PKT_C_CHAT = 1016,
-	PKT_S_CHAT = 1017,
+	PKT_C_CREATE_ROOM = 1006,
+	PKT_S_CREATE_ROOM = 1007,
+	PKT_C_JOIN_ROOM = 1008,
+	PKT_S_JOIN_ROOM = 1009,
+	PKT_C_DESTROY_ROOM = 1010,
+	PKT_S_DESTROY_ROOM = 1011,
+	PKT_C_ENTER_GAME = 1012,
+	PKT_S_ENTER_GAME = 1013,
+	PKT_C_CHAT = 1014,
+	PKT_S_CHAT = 1015,
 };
 
 // Custom Handlers
@@ -35,7 +33,6 @@ bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len);
 bool Handle_C_CREATE_ACCOUNT(PacketSessionRef& session, Protocol::C_CREATE_ACCOUNT& pkt);
 bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt);
 bool Handle_C_ADD_FRIEND(PacketSessionRef& session, Protocol::C_ADD_FRIEND& pkt);
-bool Handle_C_GET_FRIEND(PacketSessionRef& session, Protocol::C_GET_FRIEND& pkt);
 bool Handle_C_CREATE_ROOM(PacketSessionRef& session, Protocol::C_CREATE_ROOM& pkt);
 bool Handle_C_JOIN_ROOM(PacketSessionRef& session, Protocol::C_JOIN_ROOM& pkt);
 bool Handle_C_DESTROY_ROOM(PacketSessionRef& session, Protocol::C_DESTROY_ROOM& pkt);
@@ -52,7 +49,6 @@ public:
 		GPacketHandler[PKT_C_CREATE_ACCOUNT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_CREATE_ACCOUNT>(Handle_C_CREATE_ACCOUNT, session, buffer, len); };
 		GPacketHandler[PKT_C_LOGIN] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_LOGIN>(Handle_C_LOGIN, session, buffer, len); };
 		GPacketHandler[PKT_C_ADD_FRIEND] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_ADD_FRIEND>(Handle_C_ADD_FRIEND, session, buffer, len); };
-		GPacketHandler[PKT_C_GET_FRIEND] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_GET_FRIEND>(Handle_C_GET_FRIEND, session, buffer, len); };
 		GPacketHandler[PKT_C_CREATE_ROOM] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_CREATE_ROOM>(Handle_C_CREATE_ROOM, session, buffer, len); };
 		GPacketHandler[PKT_C_JOIN_ROOM] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_JOIN_ROOM>(Handle_C_JOIN_ROOM, session, buffer, len); };
 		GPacketHandler[PKT_C_DESTROY_ROOM] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_DESTROY_ROOM>(Handle_C_DESTROY_ROOM, session, buffer, len); };
@@ -68,7 +64,6 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::S_CREATE_ACCOUNT& pkt) { return MakeSendBuffer(pkt, PKT_S_CREATE_ACCOUNT); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_LOGIN& pkt) { return MakeSendBuffer(pkt, PKT_S_LOGIN); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_ADD_FRIEND& pkt) { return MakeSendBuffer(pkt, PKT_S_ADD_FRIEND); }
-	static SendBufferRef MakeSendBuffer(Protocol::S_GET_FRIEND& pkt) { return MakeSendBuffer(pkt, PKT_S_GET_FRIEND); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_CREATE_ROOM& pkt) { return MakeSendBuffer(pkt, PKT_S_CREATE_ROOM); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_JOIN_ROOM& pkt) { return MakeSendBuffer(pkt, PKT_S_JOIN_ROOM); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_DESTROY_ROOM& pkt) { return MakeSendBuffer(pkt, PKT_S_DESTROY_ROOM); }

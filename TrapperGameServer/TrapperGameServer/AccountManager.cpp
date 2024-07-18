@@ -145,10 +145,9 @@ UserInfo& AccountManager::GetAccountInfo(string id)
 
 	if (SQL_SUCCEEDED(ret))
 	{
-		if (SQL_SUCCEEDED(ret))
-		{
-			std::cout << "Player UID: " << uid << ", Nickname: " << nickname << std::endl;
-		}
+
+		std::cout << "Player UID: " << uid << ", Nickname: " << nickname << std::endl;
+
 	}
 	m_MyInfo.uid = uid;
 	m_MyInfo.id = id;
@@ -171,37 +170,81 @@ int32 AccountManager::AddFriend(string friendId)
 	WCHAR wMyId[idLength];
 	ZeroMemory(wMyId, sizeof(wMyId));
 	MultiByteToWideChar(CP_UTF8, 0, m_MyInfo.id.c_str(), -1, wMyId, idLength);
-	addFriend.In_UserId(wMyId);
+	addFriend.In_PlayerId(wMyId);
 
 	addFriend.Execute();
 
 	SQLHSTMT stmt = m_DbConn->GetStatement();
 	SQLLEN indicator;
-	SQLSMALLINT result = 0;
+	SQLINTEGER result = 0;
+
+	SQLBindCol(stmt, 1, SQL_C_SLONG, &result, sizeof(result), &indicator);
+
 	SQLRETURN ret = addFriend.Fetch();
 
 	if (SQL_SUCCEEDED(ret))
 	{
-		ret = SQLGetData(stmt, 1, SQL_C_SSHORT, &result, 0, &indicator);
-		if (SQL_SUCCEEDED(ret))
+		// Insert successful
+		if (result == 1)
 		{
-			// friendid가 없을 때
-			if (result == -1)
-			{
-				return result;
-			}
-			// 이미 친구일 때
-			else if (result == 0)
-			{
-				return result;
-			}
-			// insert 성공
-			else if (result == 1)
-			{
-				return result;
-			}			
 		}
+		// User and friend are same
+		else if (result == 2)
+		{
+		}
+		// Friend does not exist
+		else if (result == 3)
+		{
+		}
+		// Friendship already exists
+		else if (result == 4)
+		{
+		}
+		// Insert failed
+		else if (result == 5)
+		{
+		}
+		// Unknown error code
+		else
+		{
+		}
+		return result;
 	}
+	// Fetch failed
+	return -1;
+}
+
+vector<tuple<int32, string, string>>& AccountManager::GetFriends(string id)
+{	
+	SP::GetFriendsList getFriends(*m_DbConn);
+	const size_t idLength = 50;
+	WCHAR wId[idLength];
+	ZeroMemory(wId, sizeof(wId));
+	MultiByteToWideChar(CP_UTF8, 0, id.c_str(), -1, wId, idLength);
+	getFriends.In_PlayerId(wId);
+	
+	SQLINTEGER uid;
+	SQLWCHAR friendId[51];
+	SQLWCHAR playerNickname[51];
+
+	getFriends.Execute();
+
+	SQLRETURN ret;
+
+	vector<tuple<int32, string, string>> friends;
+
+	while (getFriends.Fetch())
+	{
+		/*wstring convertId = std::wstring(friendId, friendIdLen / sizeof(SQLWCHAR));
+		string friendPlayerId(convertId.begin(), convertId.end());
+
+		wstring convertNickname = std::wstring(playerNickname, playerNicknameLen / sizeof(SQLWCHAR));
+		string friendNickname(convertNickname.begin(), convertNickname.end());
+
+		friends.push_back({ uid, friendPlayerId, friendNickname });
+	*/}
+
+	return friends;
 }
 
 void AccountManager::PushActiveAccount(PacketSessionRef session, string id)

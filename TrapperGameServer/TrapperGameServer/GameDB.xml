@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <GameDB>
-	<Table name="Player" desc="골드 테이블">
-		<Column name="id" type="int" notnull="true" identity="1,1" />
-		<Column name="playerId" type="nvarchar(50)" notnull="false" unique="true" />
-		<Column name="playerPassword" type="nvarchar(50)" notnull="false" />
-		<Column name="playerNickname" type="nvarchar(50)" notnull="false" />
-		<Index type="clustered">
-			<PrimaryKey/>
-			<Column name="id" />
-		</Index>
-	</Table>
+  <Table name="Player" desc="골드 테이블">
+    <Column name="id" type="int" notnull="true" identity="1,1" />
+    <Column name="playerId" type="nvarchar(50)" notnull="false" unique="true" />
+    <Column name="playerPassword" type="nvarchar(50)" notnull="false" />
+    <Column name="playerNickname" type="nvarchar(50)" notnull="false" />
+    <Index type="clustered">
+      <PrimaryKey/>
+      <Column name="id" />
+    </Index>
+  </Table>
 
   <Table name="Friends" desc="친구 테이블">
     <Column name="UserId" type="nvarchar(50)" notnull="true" />
@@ -37,7 +37,7 @@
   <Procedure name="spGetPlayerInfo">
     <Param name="@playerId" type="nvarchar(50)" />
     <Body>
-        <![CDATA[
+      <![CDATA[
         SELECT [id], [playerNickname]
         FROM [dbo].[Player]
         WHERE [playerId] = @playerId;
@@ -83,8 +83,6 @@
   <Procedure name="spDeleteAllGold">
     <Body>
       <![CDATA[
-        DELETE FROM [dbo].[Player];
-        DBCC CHECKIDENT ('[dbo].[Player]', RESEED, 0);
         
          DELETE FROM [dbo].[Friends];
         DBCC CHECKIDENT ('[dbo].[Friends]', RESEED, 0);
@@ -103,30 +101,54 @@
   </Procedure>
 
   <Procedure name="spAddFriend">
-    <Param name="@userId" type="nvarchar(50)"/>
+    <Param name="@playerId" type="nvarchar(50)"/>
     <Param name="@friendId" type="nvarchar(50)"/>
     <Body>
       <![CDATA[
-                 DECLARE @result INT;
-
-                 IF NOT EXISTS (SELECT 1 FROM [dbo].[Player] WHERE [playerId] = @friendId)
-                 BEGIN
-                     SET @result = -1;
-                 END
-                 ELSE
-                 BEGIN
-                     IF EXISTS (SELECT 1 FROM [dbo].[Friends] WHERE [UserId] = @userId AND [FriendId] = @friendId)
-                     BEGIN
-                         SET @result = 0;
-                     END
-                     ELSE
-                     BEGIN
-                         INSERT INTO [dbo].[Friends] ([UserId], [FriendId]) VALUES (@userId, @friendId);
-                         SET @result = 1;
-                     END
-                 END
-
-                 SELECT @result AS 'Result';
+              SET NOCOUNT ON;
+      
+              DECLARE @result INT;
+              DECLARE @friendExists INT;
+              
+              IF @playerId = @friendId
+                  BEGIN
+                      SET @result = 2;
+                  END
+              ELSE
+              BEGIN
+                  SELECT @friendExists = CASE WHEN EXISTS (SELECT 1 FROM Player WHERE playerId = @friendId) THEN 1 ELSE 0 END;
+              
+                  IF @friendExists = 0
+                  BEGIN
+                      SET @result = 3;
+                  END
+                  ELSE
+                  BEGIN
+                      IF EXISTS (SELECT 1 FROM Friends WHERE UserId = @playerId AND FriendId = @friendId)
+                      BEGIN
+                          SET @result = 4;
+                      END
+                      ELSE
+                      BEGIN
+                          INSERT INTO Friends (UserId, FriendId)
+                          VALUES (@playerId, @friendId);
+                      
+                          INSERT INTO Friends (UserId, FriendId)
+                          VALUES (@friendId, @playerId);
+                      
+                          IF @@ROWCOUNT = 1
+                          BEGIN
+                              SET @result = 1;
+                          END
+                          ELSE
+                          BEGIN
+                              SET @result = 5;
+                          END
+                      END
+                  END
+              END
+              
+              SELECT @result AS 'AddFriendResult';
             ]]>
     </Body>
   </Procedure>
@@ -151,12 +173,17 @@
     <Param name="@playerId" type="nvarchar(50)"/>
     <Body>
       <![CDATA[
-            SELECT f.FriendId, p.playerNickname 
-            FROM Friends f
-            JOIN Player p ON f.FriendId = p.playerId
-            WHERE f.UserId = @playerId;
+            SET NOCOUNT ON;
+
+            SELECT [id], [playerId], [playerNickname]
+            FROM [dbo].[Player]
+            WHERE [playerId] IN (
+                SELECT [FriendId]
+                FROM [dbo].[Friends]
+                WHERE [UserId] = @playerId
+            );
         ]]>
     </Body>
   </Procedure>
-  
+
 </GameDB>
