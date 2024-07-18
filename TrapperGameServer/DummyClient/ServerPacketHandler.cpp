@@ -53,6 +53,7 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 	{
 		GClientContent->ChangeRunning();
 		cout << "로그인 성공" << endl;
+		GClientContent->SetMyId(pkt.user().playerid());
 	}
 
 	return true;

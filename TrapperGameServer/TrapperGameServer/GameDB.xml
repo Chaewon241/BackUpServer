@@ -38,7 +38,7 @@
     <Param name="@playerId" type="nvarchar(50)" />
     <Body>
       <![CDATA[
-        SELECT [id], [playerNickname]
+        SELECT playerNickname
         FROM [dbo].[Player]
         WHERE [playerId] = @playerId;
         ]]>
@@ -170,18 +170,15 @@
   </Procedure>
 
   <Procedure name="spGetFriendsList">
-    <Param name="@playerId" type="nvarchar(50)"/>
+    <Param name="@UserId" type="nvarchar(50)"/>
     <Body>
       <![CDATA[
             SET NOCOUNT ON;
 
-            SELECT [id], [playerId], [playerNickname]
-            FROM [dbo].[Player]
-            WHERE [playerId] IN (
-                SELECT [FriendId]
-                FROM [dbo].[Friends]
-                WHERE [UserId] = @playerId
-            );
+            SELECT FriendId
+            FROM [dbo].[Friends]
+            WHERE UserId = @UserId
+            
         ]]>
     </Body>
   </Procedure>

@@ -131,27 +131,26 @@ UserInfo& AccountManager::GetAccountInfo(string id)
 	MultiByteToWideChar(CP_UTF8, 0, id.c_str(), -1, wId, idLength);
 	getPlayerInfo.In_PlayerId(wId);
 
+	/*SQLWCHAR nickname[50];
+	getPlayerInfo.Out_PlayerNickname(nickname);*/
+
 	getPlayerInfo.Execute();
 
 	SQLHSTMT stmt = m_DbConn->GetStatement();
-	SQLSMALLINT uid;
-	SQLCHAR nickname[50];
+	
 	SQLLEN indicator;
-
-	SQLBindCol(stmt, 1, SQL_C_SSHORT, &uid, sizeof(uid), &indicator);
-	SQLBindCol(stmt, 2, SQL_C_CHAR, nickname, sizeof(nickname), &indicator);
 
 	SQLRETURN ret = getPlayerInfo.Fetch();
 
 	if (SQL_SUCCEEDED(ret))
 	{
 
-		std::cout << "Player UID: " << uid << ", Nickname: " << nickname << std::endl;
+		//std::cout << "Nickname: " << nickname << std::endl;
 
 	}
-	m_MyInfo.uid = uid;
+	m_MyInfo.uid = 0;
 	m_MyInfo.id = id;
-	m_MyInfo.nickname = (const char*)nickname;
+	//m_MyInfo.nickname = (const char*)nickname;
 
 	return m_MyInfo;
 }
@@ -221,11 +220,13 @@ vector<tuple<int32, string, string>>& AccountManager::GetFriends(string id)
 	WCHAR wId[idLength];
 	ZeroMemory(wId, sizeof(wId));
 	MultiByteToWideChar(CP_UTF8, 0, id.c_str(), -1, wId, idLength);
-	getFriends.In_PlayerId(wId);
+	getFriends.In_UserId(wId);
 	
-	SQLINTEGER uid;
-	SQLWCHAR friendId[51];
-	SQLWCHAR playerNickname[51];
+	WCHAR friendId[51];
+	WCHAR userId[51];
+
+	getFriends.Out_UserId(userId);
+	getFriends.Out_FriendId(friendId);
 
 	getFriends.Execute();
 
@@ -235,14 +236,9 @@ vector<tuple<int32, string, string>>& AccountManager::GetFriends(string id)
 
 	while (getFriends.Fetch())
 	{
-		/*wstring convertId = std::wstring(friendId, friendIdLen / sizeof(SQLWCHAR));
-		string friendPlayerId(convertId.begin(), convertId.end());
-
-		wstring convertNickname = std::wstring(playerNickname, playerNicknameLen / sizeof(SQLWCHAR));
-		string friendNickname(convertNickname.begin(), convertNickname.end());
-
-		friends.push_back({ uid, friendPlayerId, friendNickname });
-	*/}
+		GConsoleLogger->WriteStdOut(Color::BLUE,
+			L"my[%s] fri[%s] \n", userId, friendId);
+	}
 
 	return friends;
 }

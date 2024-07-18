@@ -114,14 +114,16 @@ namespace SP
     private:
     };
 
-    class GetFriendsList : public DBBind<1,0>
+    class GetFriendsList : public DBBind<1,2>
     {
     public:
     	GetFriendsList(DBConnection& conn) : DBBind(conn, L"{CALL dbo.spGetFriendsList(?)}") { }
-    	template<int32 N> void In_PlayerId(WCHAR(&v)[N]) { BindParam(0, v); };
-    	template<int32 N> void In_PlayerId(const WCHAR(&v)[N]) { BindParam(0, v); };
-    	void In_PlayerId(WCHAR* v, int32 count) { BindParam(0, v, count); };
-    	void In_PlayerId(const WCHAR* v, int32 count) { BindParam(0, v, count); };
+    	template<int32 N> void In_UserId(WCHAR(&v)[N]) { BindParam(0, v); };
+    	template<int32 N> void In_UserId(const WCHAR(&v)[N]) { BindParam(0, v); };
+    	void In_UserId(WCHAR* v, int32 count) { BindParam(0, v, count); };
+    	void In_UserId(const WCHAR* v, int32 count) { BindParam(0, v, count); };
+    	template<int32 N> void Out_UserId(OUT WCHAR(&v)[N]) { BindCol(0, v); };
+    	template<int32 N> void Out_FriendId(OUT WCHAR(&v)[N]) { BindCol(1, v); };
 
     private:
     };
