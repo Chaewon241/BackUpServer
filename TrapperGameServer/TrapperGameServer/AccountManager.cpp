@@ -106,6 +106,7 @@ UserInfo AccountManager::GetAccountInfo(string id)
 
 int32 AccountManager::AddFriend(string myId, string friendId)
 {
+	WRITE_LOCK;
 	SP::AddFriend addFriend(*GDBManager->GetDBConn());
 	
 	// 내 아이디
