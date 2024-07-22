@@ -87,7 +87,8 @@
   <Procedure name="spDeleteAllGold">
     <Body>
       <![CDATA[
-        
+        DELETE FROM [dbo].[Player];
+        DBCC CHECKIDENT ('[dbo].[Player]', RESEED, 0);
         DELETE FROM [dbo].[Friends];
         DBCC CHECKIDENT ('[dbo].[Friends]', RESEED, 0);
         ]]>

@@ -30,25 +30,19 @@ bool AccountManager::Join(string id, string password, string nickname)
 	}
 
 	WRITE_LOCK;
-	const size_t idLength = 50;
-	WCHAR wId[idLength];
-	ZeroMemory(wId, sizeof(wId));
-	MultiByteToWideChar(CP_UTF8, 0, id.c_str(), -1, wId, idLength);
+	wstring wId;
+	wId.assign(id.begin(), id.end());
 
-	const size_t nicknameLength = 50;
-	WCHAR wNickname[nicknameLength];
-	ZeroMemory(wNickname, sizeof(wNickname));
-	MultiByteToWideChar(CP_UTF8, 0, nickname.c_str(), -1, wNickname, nicknameLength);
+	wstring wNickname;
+	wNickname.assign(nickname.begin(), nickname.end());
 
-	const size_t passwordLength = 50;
-	WCHAR wPassword[passwordLength];
-	ZeroMemory(wPassword, sizeof(wPassword));
-	MultiByteToWideChar(CP_UTF8, 0, password.c_str(), -1, wPassword, passwordLength);
-
+	wstring wPassword;
+	wPassword.assign(password.begin(), password.end());
+	
 	SP::InsertPlayer insertPlayer(*GDBManager->GetDBConn());
-	insertPlayer.In_PlayerId(wId);
-	insertPlayer.In_PlayerPassword(wPassword);
-	insertPlayer.In_PlayerNickname(wNickname);
+	insertPlayer.In_PlayerId(wId.c_str(), static_cast<int32>(wId.length()));
+	insertPlayer.In_PlayerPassword(wPassword.c_str(), static_cast<int32>(wPassword.length()));
+	insertPlayer.In_PlayerNickname(wNickname.c_str(), static_cast<int32>(wNickname.length()));
 
 	if (insertPlayer.Execute())
 	{
@@ -117,7 +111,6 @@ int32 AccountManager::AddFriend(string myId, string friendId)
 	// 내 아이디
 	wstring wMyId(myId.begin(), myId.end());
 	addFriend.In_PlayerId(wMyId.c_str(), static_cast<int32>(wMyId.length()));
-
 
 	// 친구 추가할 친구 아이디
 	wstring wFriendId(friendId.begin(), friendId.end());
