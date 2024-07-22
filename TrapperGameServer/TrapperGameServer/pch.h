@@ -19,3 +19,4 @@ using GameSessionRef = shared_ptr<class GameSession>;
 using PlayerRef = shared_ptr<class Player>;
 using RoomRef = shared_ptr<class Room>;
 using RoomManagerRef = shared_ptr<class RoomManager>;
+using DBManagerRef = shared_ptr<class DBManager>;

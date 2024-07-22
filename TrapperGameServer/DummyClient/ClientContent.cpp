@@ -134,7 +134,8 @@ void ClientContent::AfterLogin()
 			cin >> id;
 
 			Protocol::C_ADD_FRIEND pkt;
-			pkt.set_id(id);
+			pkt.set_myid(myId);
+			pkt.set_friendid(id);
 			auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
 			service->Broadcast(sendBuffer);
 		}

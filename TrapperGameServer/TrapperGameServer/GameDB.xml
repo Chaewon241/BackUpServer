@@ -29,7 +29,11 @@
     <Param name="@playerNickname" type="nvarchar(50)"/>
     <Body>
       <![CDATA[
+      SET NOCOUNT ON;
+      
 			INSERT INTO [dbo].[Player]([playerId], [playerPassword], [playerNickname]) VALUES(@playerId, @playerPassword, @playerNickname);
+      
+      SELECT SCOPE_IDENTITY() AS InsertedID;
 			]]>
     </Body>
   </Procedure>
@@ -38,7 +42,7 @@
     <Param name="@playerId" type="nvarchar(50)" />
     <Body>
       <![CDATA[
-        SELECT playerNickname
+        SELECT [id], [playerNickname]
         FROM [dbo].[Player]
         WHERE [playerId] = @playerId;
         ]]>
@@ -84,8 +88,17 @@
     <Body>
       <![CDATA[
         
-         DELETE FROM [dbo].[Friends];
+        DELETE FROM [dbo].[Friends];
         DBCC CHECKIDENT ('[dbo].[Friends]', RESEED, 0);
+        ]]>
+    </Body>
+  </Procedure>
+
+  <Procedure name="spGetAllPlayers">
+    <Body>
+      <![CDATA[
+        SELECT id, playerId, playerPassword, playerNickname
+        FROM [dbo].[Player]
         ]]>
     </Body>
   </Procedure>
@@ -170,15 +183,27 @@
   </Procedure>
 
   <Procedure name="spGetFriendsList">
-    <Param name="@UserId" type="nvarchar(50)"/>
+    <Param name="@playerId" type="nvarchar(50)"/>
     <Body>
       <![CDATA[
             SET NOCOUNT ON;
 
-            SELECT FriendId
-            FROM [dbo].[Friends]
-            WHERE UserId = @UserId
-            
+            SELECT [id], [playerId], [playerNickname]
+            FROM [dbo].[Player]
+            WHERE [playerId] IN (
+                SELECT [FriendId]
+                FROM [dbo].[Friends]
+                WHERE [UserId] = @playerId
+            );
+        ]]>
+    </Body>
+  </Procedure>
+
+  <Procedure name="spGetAllFriends">
+    <Body>
+      <![CDATA[
+        SELECT UserId, FriendId
+        FROM [dbo].[Friends]
         ]]>
     </Body>
   </Procedure>

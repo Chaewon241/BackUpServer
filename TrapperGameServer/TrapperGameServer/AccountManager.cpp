@@ -6,6 +6,7 @@
 #include "DBSynchronizer.h"
 #include "GenProcedures.h"
 #include "GameSession.h"
+#include "DBManager.h"
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -13,43 +14,26 @@ AccountManagerRef GAccountManager;
 
 AccountManager::AccountManager()
 {
-	ASSERT_CRASH(GDBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=yes;"));
-
-	m_DbConn = GDBConnectionPool->Pop();
-	DBSynchronizer dbSync(*m_DbConn);
-	dbSync.Synchronize(L"GameDB.xml");
 }
 
 bool AccountManager::Join(string id, string password, string nickname)
 {
-	WRITE_LOCK;
+	vector<DBManager::Player> players = GDBManager->get_all_player();
 
+	// 아이디 중복 확인
+	for (auto p : players)
+	{
+		string player;
+		player.assign(p.playerId.begin(), p.playerId.end());
+		if (player.compare(id) == 0)
+			return false;
+	}
+
+	WRITE_LOCK;
 	const size_t idLength = 50;
 	WCHAR wId[idLength];
 	ZeroMemory(wId, sizeof(wId));
 	MultiByteToWideChar(CP_UTF8, 0, id.c_str(), -1, wId, idLength);
-
-	SP::CheckPlayerIdExists checkPlayer(*m_DbConn);
-	checkPlayer.In_PlayerId(wId);
-
-	checkPlayer.Execute();
-
-	SQLHSTMT stmt = m_DbConn->GetStatement();
-	SQLLEN indicator;
-	SQLSMALLINT exists = 0;
-	SQLRETURN ret = checkPlayer.Fetch();
-
-	if (SQL_SUCCEEDED(ret)) 
-	{
-		ret = SQLGetData(stmt, 1, SQL_C_SSHORT, &exists, 0, &indicator);
-		if (SQL_SUCCEEDED(ret)) 
-		{
-			if (exists) 
-			{
-				return false;
-			}
-		}
-	}
 
 	const size_t nicknameLength = 50;
 	WCHAR wNickname[nicknameLength];
@@ -59,121 +43,89 @@ bool AccountManager::Join(string id, string password, string nickname)
 	const size_t passwordLength = 50;
 	WCHAR wPassword[passwordLength];
 	ZeroMemory(wPassword, sizeof(wPassword));
-
 	MultiByteToWideChar(CP_UTF8, 0, password.c_str(), -1, wPassword, passwordLength);
 
-	SP::InsertPlayer insertPlayer(*m_DbConn);
+	SP::InsertPlayer insertPlayer(*GDBManager->GetDBConn());
 	insertPlayer.In_PlayerId(wId);
 	insertPlayer.In_PlayerPassword(wPassword);
 	insertPlayer.In_PlayerNickname(wNickname);
 
-	insertPlayer.Execute();
-
-	return true;
-}
-
-bool AccountManager::Login(string id, string password)
-{
-	SP::LoginPlayer loginPlayer(*m_DbConn);
-
-	const size_t idLength = 50;
-	WCHAR wId[idLength];
-	ZeroMemory(wId, sizeof(wId));
-	MultiByteToWideChar(CP_UTF8, 0, id.c_str(), -1, wId, idLength);
-	loginPlayer.In_PlayerId(wId);
-
-	const size_t passwordLength = 50;
-	WCHAR wPassword[passwordLength];
-	ZeroMemory(wPassword, sizeof(wPassword));
-	MultiByteToWideChar(CP_UTF8, 0, password.c_str(), -1, wPassword, passwordLength);
-	loginPlayer.In_PlayerPassword(wPassword);
-
-	loginPlayer.Execute();
-
-	SQLHSTMT stmt = m_DbConn->GetStatement();
-	SQLLEN indicator;
-	SQLSMALLINT exists = 0;
-	SQLRETURN ret = loginPlayer.Fetch();
-
-	if (SQL_SUCCEEDED(ret))
+	if (insertPlayer.Execute())
 	{
-		ret = SQLGetData(stmt, 1, SQL_C_SSHORT, &exists, 0, &indicator);
-		if (SQL_SUCCEEDED(ret))
+		int insertedId;
+		if (insertPlayer.Fetch())
 		{
-			// 비밀번호 틀림
-			if (exists == 0)
-			{
-				return false;
-			}
-			// 로그인 성공
-			else if (exists == 1)
-			{
-				return true;
-			}
-			// ID 존재하지 않음
-			else if (exists == 2)
-			{
-				return false;
-			}
+			SQLGetData(GDBManager->GetDBConn()->GetStatement(), 1, SQL_C_SLONG, &insertedId, 0, nullptr);
+
+			DBManager::Player player(insertedId, wId, wPassword, wNickname);
+
+			GDBManager->add_player_record(player);
 		}
 	}
 
 	return true;
 }
 
-UserInfo& AccountManager::GetAccountInfo(string id)
+bool AccountManager::Login(string id, string password)
 {
-	SP::GetPlayerInfo getPlayerInfo(*m_DbConn);
+	vector<DBManager::Player> players = GDBManager->get_all_player();
 
-	const size_t idLength = 50;
-	WCHAR wId[idLength];
-	ZeroMemory(wId, sizeof(wId));
-	MultiByteToWideChar(CP_UTF8, 0, id.c_str(), -1, wId, idLength);
-	getPlayerInfo.In_PlayerId(wId);
-
-	/*SQLWCHAR nickname[50];
-	getPlayerInfo.Out_PlayerNickname(nickname);*/
-
-	getPlayerInfo.Execute();
-
-	SQLHSTMT stmt = m_DbConn->GetStatement();
-	
-	SQLLEN indicator;
-
-	SQLRETURN ret = getPlayerInfo.Fetch();
-
-	if (SQL_SUCCEEDED(ret))
+	for (auto p : players)
 	{
-
-		//std::cout << "Nickname: " << nickname << std::endl;
-
+		string playerId;
+		playerId.assign(p.playerId.begin(), p.playerId.end());
+		string playerPassword;
+		playerPassword.assign(p.playerPassword.begin(), p.playerPassword.end());
+		if (playerId.compare(id) == 0)
+		{
+			if(playerPassword.compare(password) == 0)
+				return true;
+			else
+				return false;
+		}
 	}
-	m_MyInfo.uid = 0;
-	m_MyInfo.id = id;
-	//m_MyInfo.nickname = (const char*)nickname;
-
-	return m_MyInfo;
+	// 아이디가 없을 때
+	return false;
 }
 
-int32 AccountManager::AddFriend(string friendId)
+UserInfo AccountManager::GetAccountInfo(string id)
 {
-	SP::AddFriend addFriend(*m_DbConn);
-	// 친구 추가할 친구 아이디
-	const size_t idLength = 50;
-	WCHAR wFreindId[idLength];
-	ZeroMemory(wFreindId, sizeof(wFreindId));
-	MultiByteToWideChar(CP_UTF8, 0, friendId.c_str(), -1, wFreindId, idLength);
-	addFriend.In_FriendId(wFreindId);
+	vector<DBManager::Player> players = GDBManager->get_all_player();
 
+	for (auto p : players)
+	{
+		string playerId;
+		playerId.assign(p.playerId.begin(), p.playerId.end());
+		string playerNickname;
+		playerNickname.assign(p.playerNickname.begin(), p.playerNickname.end());
+
+		if (playerId.compare(id) == 0)
+		{
+			UserInfo user(p.id, playerId, playerNickname);
+			return user;
+		}
+	}
+
+	UserInfo nullUser;
+	return nullUser;
+}
+
+int32 AccountManager::AddFriend(string myId, string friendId)
+{
+	SP::AddFriend addFriend(*GDBManager->GetDBConn());
+	
 	// 내 아이디
-	WCHAR wMyId[idLength];
-	ZeroMemory(wMyId, sizeof(wMyId));
-	MultiByteToWideChar(CP_UTF8, 0, m_MyInfo.id.c_str(), -1, wMyId, idLength);
-	addFriend.In_PlayerId(wMyId);
+	wstring wMyId(myId.begin(), myId.end());
+	addFriend.In_PlayerId(wMyId.c_str(), static_cast<int32>(wMyId.length()));
+
+
+	// 친구 추가할 친구 아이디
+	wstring wFriendId(friendId.begin(), friendId.end());
+	addFriend.In_FriendId(wFriendId.c_str(), static_cast<int32>(wFriendId.length()));
 
 	addFriend.Execute();
 
-	SQLHSTMT stmt = m_DbConn->GetStatement();
+	SQLHSTMT stmt = GDBManager->GetDBConn()->GetStatement();
 	SQLLEN indicator;
 	SQLINTEGER result = 0;
 
@@ -186,6 +138,11 @@ int32 AccountManager::AddFriend(string friendId)
 		// Insert successful
 		if (result == 1)
 		{
+			// 뒤집어서도 저장해주기
+			DBManager::Friends friends1(wMyId, wFriendId);
+			GDBManager->add_friends_record(friends1);
+			DBManager::Friends friends2(wFriendId, wMyId);
+			GDBManager->add_friends_record(friends2);
 		}
 		// User and friend are same
 		else if (result == 2)
@@ -209,38 +166,9 @@ int32 AccountManager::AddFriend(string friendId)
 		}
 		return result;
 	}
+
 	// Fetch failed
 	return -1;
-}
-
-vector<tuple<int32, string, string>>& AccountManager::GetFriends(string id)
-{	
-	SP::GetFriendsList getFriends(*m_DbConn);
-	const size_t idLength = 50;
-	WCHAR wId[idLength];
-	ZeroMemory(wId, sizeof(wId));
-	MultiByteToWideChar(CP_UTF8, 0, id.c_str(), -1, wId, idLength);
-	getFriends.In_UserId(wId);
-	
-	WCHAR friendId[51];
-	WCHAR userId[51];
-
-	getFriends.Out_UserId(userId);
-	getFriends.Out_FriendId(friendId);
-
-	getFriends.Execute();
-
-	SQLRETURN ret;
-
-	vector<tuple<int32, string, string>> friends;
-
-	while (getFriends.Fetch())
-	{
-		GConsoleLogger->WriteStdOut(Color::BLUE,
-			L"my[%s] fri[%s] \n", userId, friendId);
-	}
-
-	return friends;
 }
 
 void AccountManager::PushActiveAccount(PacketSessionRef session, string id)

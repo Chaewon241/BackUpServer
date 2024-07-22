@@ -10,6 +10,7 @@
 #include "DBSynchronizer.h"
 #include "GenProcedures.h"
 #include "AccountManager.h"
+#include "DBManager.h"
 
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warnings(disable: 4996)
@@ -59,7 +60,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		loginPkt.set_success(true);
 		Protocol::UserInfo* userInfo = loginPkt.mutable_user();
 		userInfo->set_id(info.uid);
-		userInfo->set_playerid(pkt.id());
+		userInfo->set_playerid(info.id);
 		userInfo->set_nickname(info.nickname);
 	}
 	else
@@ -73,7 +74,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 
 bool Handle_C_ADD_FRIEND(PacketSessionRef& session, Protocol::C_ADD_FRIEND& pkt)
 {
-	int32 addFriendResult = GAccountManager->AddFriend(pkt.id());
+	int32 addFriendResult = GAccountManager->AddFriend(pkt.myid(), pkt.friendid());
 
 	Protocol::S_ADD_FRIEND addFriendPkt;
 	addFriendPkt.set_success(addFriendResult);
@@ -86,19 +87,42 @@ bool Handle_C_ADD_FRIEND(PacketSessionRef& session, Protocol::C_ADD_FRIEND& pkt)
 
 bool Handle_C_GET_FRIEND(PacketSessionRef& session, Protocol::C_GET_FRIEND& pkt)
 {
-	GAccountManager->GetFriends(pkt.id());
-
-	/*vector<wstring> friends = GAccountManager->GetFriends(pkt.id());
-
+	vector<DBManager::Friends> friends = GDBManager->get_all_friends();
+	vector<DBManager::Player> players = GDBManager->get_all_player();
 	Protocol::S_GET_FRIEND getFriendPkt;
+	string findId;
+	findId.assign(pkt.id().begin(), pkt.id().end());
 
 	for (auto f : friends)
 	{
-		Protocol::UserInfo* userInfo = getFriendPkt.mutable_user();
-		userInfo->set_id(info.uid);
-		userInfo->set_playerid(pkt.id());
-		userInfo->set_nickname(info.nickname);
-	}*/
+		// UserId가 내 아이디인거 찾기
+		string myId;
+		myId.assign(f.UserId.begin(), f.UserId.end());
+		if (myId.compare(findId) == 0)
+		{
+			// UserId가 내 아이디인 FriendId 가져오기
+			string friendId;
+			friendId.assign(f.FriendId.begin(), f.FriendId.end());
+			for (auto p : players)
+			{
+				// FriendId를 
+				string pId;
+				pId.assign(p.playerId.begin(), p.playerId.end());
+				if (pId.compare(friendId) == 0)
+				{
+					auto userInfo = getFriendPkt.add_friends();
+					userInfo->set_id(p.id);
+					userInfo->set_playerid(pId);
+					string pNickname;
+					pNickname.assign(p.playerNickname.begin(), p.playerNickname.end());
+					userInfo->set_nickname(pNickname);
+				}
+			}
+		}
+	}
+
+	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(getFriendPkt);
+	session->Send(sendBuffer);
 	
 	return false;
 }

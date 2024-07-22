@@ -14,6 +14,7 @@
 #include "GenProcedures.h"
 #include "AccountManager.h"
 #include "RoomManager.h"
+#include "DBManager.h"
 
 #define Login
 
@@ -46,6 +47,8 @@ int main(int argc, char* argv[])
 
 #ifdef Login
 	GAccountManager = MakeShared<AccountManager>();
+	GDBManager = MakeShared<DBManager>();
+	GDBManager->Initialize();
 #endif
 	GRoomManager = MakeShared<RoomManager>();
 
@@ -58,7 +61,7 @@ int main(int argc, char* argv[])
 
 	ASSERT_CRASH(service->Start());
 
-	for (int32 i = 0; i < 5; i++)
+	for (int32 i = 0; i < 64; i++)
 	{
 		GThreadManager->Launch([=]()
 			{

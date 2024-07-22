@@ -79,7 +79,12 @@ bool Handle_S_ADD_FRIEND(PacketSessionRef& session, Protocol::S_ADD_FRIEND& pkt)
 
 bool Handle_S_GET_FRIEND(PacketSessionRef& session, Protocol::S_GET_FRIEND& pkt)
 {
-	return false;
+	for (int i = 0; i < pkt.friends_size(); i++)
+	{
+		cout << "친구" << i + 1 << " 닉네임 : " << pkt.friends()[i].nickname() << endl;
+	}
+
+	return true;
 }
 
 

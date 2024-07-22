@@ -850,20 +850,35 @@ class C_ADD_FRIEND final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kIdFieldNumber = 1,
+    kMyIdFieldNumber = 1,
+    kFriendIdFieldNumber = 2,
   };
-  // string id = 1;
-  void clear_id();
-  const std::string& id() const;
+  // string myId = 1;
+  void clear_myid();
+  const std::string& myid() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_id(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_id();
-  PROTOBUF_FUTURE_MUST_USE_RESULT std::string* release_id();
-  void set_allocated_id(std::string* id);
+  void set_myid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_myid();
+  PROTOBUF_FUTURE_MUST_USE_RESULT std::string* release_myid();
+  void set_allocated_myid(std::string* myid);
   private:
-  const std::string& _internal_id() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(const std::string& value);
-  std::string* _internal_mutable_id();
+  const std::string& _internal_myid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_myid(const std::string& value);
+  std::string* _internal_mutable_myid();
+  public:
+
+  // string friendId = 2;
+  void clear_friendid();
+  const std::string& friendid() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_friendid(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_friendid();
+  PROTOBUF_FUTURE_MUST_USE_RESULT std::string* release_friendid();
+  void set_allocated_friendid(std::string* friendid);
+  private:
+  const std::string& _internal_friendid() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_friendid(const std::string& value);
+  std::string* _internal_mutable_friendid();
   public:
 
   // @@protoc_insertion_point(class_scope:Protocol.C_ADD_FRIEND)
@@ -873,7 +888,8 @@ class C_ADD_FRIEND final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr myid_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr friendid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -3044,49 +3060,94 @@ inline void S_LOGIN::set_allocated_user(::Protocol::UserInfo* user) {
 
 // C_ADD_FRIEND
 
-// string id = 1;
-inline void C_ADD_FRIEND::clear_id() {
-  id_.ClearToEmpty();
+// string myId = 1;
+inline void C_ADD_FRIEND::clear_myid() {
+  myid_.ClearToEmpty();
 }
-inline const std::string& C_ADD_FRIEND::id() const {
-  // @@protoc_insertion_point(field_get:Protocol.C_ADD_FRIEND.id)
-  return _internal_id();
+inline const std::string& C_ADD_FRIEND::myid() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_ADD_FRIEND.myId)
+  return _internal_myid();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void C_ADD_FRIEND::set_id(ArgT0&& arg0, ArgT... args) {
+void C_ADD_FRIEND::set_myid(ArgT0&& arg0, ArgT... args) {
  
- id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:Protocol.C_ADD_FRIEND.id)
+ myid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Protocol.C_ADD_FRIEND.myId)
 }
-inline std::string* C_ADD_FRIEND::mutable_id() {
-  // @@protoc_insertion_point(field_mutable:Protocol.C_ADD_FRIEND.id)
-  return _internal_mutable_id();
+inline std::string* C_ADD_FRIEND::mutable_myid() {
+  // @@protoc_insertion_point(field_mutable:Protocol.C_ADD_FRIEND.myId)
+  return _internal_mutable_myid();
 }
-inline const std::string& C_ADD_FRIEND::_internal_id() const {
-  return id_.Get();
+inline const std::string& C_ADD_FRIEND::_internal_myid() const {
+  return myid_.Get();
 }
-inline void C_ADD_FRIEND::_internal_set_id(const std::string& value) {
+inline void C_ADD_FRIEND::_internal_set_myid(const std::string& value) {
   
-  id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+  myid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* C_ADD_FRIEND::_internal_mutable_id() {
+inline std::string* C_ADD_FRIEND::_internal_mutable_myid() {
   
-  return id_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+  return myid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* C_ADD_FRIEND::release_id() {
-  // @@protoc_insertion_point(field_release:Protocol.C_ADD_FRIEND.id)
-  return id_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+inline std::string* C_ADD_FRIEND::release_myid() {
+  // @@protoc_insertion_point(field_release:Protocol.C_ADD_FRIEND.myId)
+  return myid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void C_ADD_FRIEND::set_allocated_id(std::string* id) {
-  if (id != nullptr) {
+inline void C_ADD_FRIEND::set_allocated_myid(std::string* myid) {
+  if (myid != nullptr) {
     
   } else {
     
   }
-  id_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), id,
+  myid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), myid,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:Protocol.C_ADD_FRIEND.id)
+  // @@protoc_insertion_point(field_set_allocated:Protocol.C_ADD_FRIEND.myId)
+}
+
+// string friendId = 2;
+inline void C_ADD_FRIEND::clear_friendid() {
+  friendid_.ClearToEmpty();
+}
+inline const std::string& C_ADD_FRIEND::friendid() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_ADD_FRIEND.friendId)
+  return _internal_friendid();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void C_ADD_FRIEND::set_friendid(ArgT0&& arg0, ArgT... args) {
+ 
+ friendid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Protocol.C_ADD_FRIEND.friendId)
+}
+inline std::string* C_ADD_FRIEND::mutable_friendid() {
+  // @@protoc_insertion_point(field_mutable:Protocol.C_ADD_FRIEND.friendId)
+  return _internal_mutable_friendid();
+}
+inline const std::string& C_ADD_FRIEND::_internal_friendid() const {
+  return friendid_.Get();
+}
+inline void C_ADD_FRIEND::_internal_set_friendid(const std::string& value) {
+  
+  friendid_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
+}
+inline std::string* C_ADD_FRIEND::_internal_mutable_friendid() {
+  
+  return friendid_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* C_ADD_FRIEND::release_friendid() {
+  // @@protoc_insertion_point(field_release:Protocol.C_ADD_FRIEND.friendId)
+  return friendid_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void C_ADD_FRIEND::set_allocated_friendid(std::string* friendid) {
+  if (friendid != nullptr) {
+    
+  } else {
+    
+  }
+  friendid_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), friendid,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:Protocol.C_ADD_FRIEND.friendId)
 }
 
 // -------------------------------------------------------------------

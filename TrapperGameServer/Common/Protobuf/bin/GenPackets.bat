@@ -25,6 +25,15 @@ XCOPY /Y Protocol.pb.h "../../../DummyClient"
 XCOPY /Y Protocol.pb.cc "../../../DummyClient"
 XCOPY /Y ServerPacketHandler.h "../../../DummyClient"
 
+XCOPY /Y Enum.pb.h "../../../../TrapperProject/Source/TrapperProject/Network"
+XCOPY /Y Enum.pb.cc "../../../../TrapperProject/Source/TrapperProject/Network"
+XCOPY /Y Struct.pb.h "../../../../TrapperProject/Source/TrapperProject/Network"
+XCOPY /Y Struct.pb.cc "../../../../TrapperProject/Source/TrapperProject/Network"
+XCOPY /Y Protocol.pb.h "../../../../TrapperProject/Source/TrapperProject/Network"
+XCOPY /Y Protocol.pb.cc "../../../../TrapperProject/Source/TrapperProject/Network"
+XCOPY /Y ServerPacketHandler.h "../../../../TrapperProject/Source/TrapperProject"
+
+
 DEL /Q /F *.pb.h
 DEL /Q /F *.pb.cc
 DEL /Q /F *.h

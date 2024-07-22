@@ -30,7 +30,8 @@ message S_LOGIN
 
 message C_ADD_FRIEND
 {
-	string id = 1;
+	string myId = 1;
+	string friendId = 2;
 }
 
 message S_ADD_FRIEND
